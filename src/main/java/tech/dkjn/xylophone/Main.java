@@ -12,6 +12,8 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter folder without ending slash:");
+        String folder = scanner.nextLine();
         System.out.println("Enter class name:");
         String className = scanner.nextLine();
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
@@ -23,28 +25,32 @@ public class Main {
         MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, methodName, descriptor, null, null);
         System.out.println("Enter operation:");
         String op = scanner.nextLine();
-        while(!Objects.equals(op, "exit")) {
-            if (Objects.equals(op, "iconstant")) {
-                System.out.println("Enter constant:");
-                int value = Integer.parseInt(scanner.nextLine());
-                mv.visitLdcInsn(value);
-            }
-            if (Objects.equals(op, "fconstant")) {
-                System.out.println("Enter constant:");
-                float value = Float.parseFloat(scanner.nextLine());
-                mv.visitLdcInsn(value);
-            }
-            if (Objects.equals(op, "ireturn")) {
-                mv.visitInsn(Opcodes.IRETURN);
-            }
-            if (Objects.equals(op, "freturn")) {
-                mv.visitInsn(Opcodes.FRETURN);
-            }
-            if (Objects.equals(op, "iadd")) {
-                mv.visitInsn(Opcodes.IADD);
-            }
-            if (Objects.equals(op, "fadd")) {
-                mv.visitInsn(Opcodes.FADD);
+        while (!Objects.equals(op, "exit")) {
+            switch (op) {
+                case "iconstant":
+                    System.out.println("Enter constant:");
+                    int intValue = Integer.parseInt(scanner.nextLine());
+                    mv.visitLdcInsn(intValue);
+                    break;
+                case "fconstant":
+                    System.out.println("Enter constant:");
+                    float floatValue = Float.parseFloat(scanner.nextLine());
+                    mv.visitLdcInsn(floatValue);
+                    break;
+                case "ireturn":
+                    mv.visitInsn(Opcodes.IRETURN);
+                    break;
+                case "freturn":
+                    mv.visitInsn(Opcodes.FRETURN);
+                    break;
+                case "iadd":
+                    mv.visitInsn(Opcodes.IADD);
+                    break;
+                case "fadd":
+                    mv.visitInsn(Opcodes.FADD);
+                    break;
+                default:
+                    System.out.println("Unknown operation: " + op);
             }
             System.out.println("Enter operation:");
             op = scanner.nextLine();
@@ -52,10 +58,11 @@ public class Main {
         mv.visitEnd();
         cw.visitEnd();
         byte[] bytecode = cw.toByteArray();
-        try (FileOutputStream fos = new FileOutputStream(className + ".class")) {
+        try (FileOutputStream fos = new FileOutputStream(folder + "/" + className + ".class")) {
             fos.write(bytecode);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        scanner.close();
     }
 }
